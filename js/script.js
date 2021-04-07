@@ -1,71 +1,92 @@
-/*eslint-env browser*/
+// VIEW EMPLOYEES
+function view(employees) {
+    // VARIABLE FOR EMPLOYEE NUMBERS
+    let i = 1;
+    // LOOP THROUGH EMPLOYEES ARRAY
+    employees.forEach(employee => {
+        console.log(`${String(i)}. ${employee}`);
+        i++;
+    });
+    console.log('');
+}
 
-var $ = function (id) {
-    "use strict";
-    return window.document.getElementById(id);
-};
+// ADD EMPLOYEE
+function add(employees) {
+    // PROMPT USER FOR EMPLOYEE TO ADD
+    let employee = prompt('Enter the employee\'s name');
+    // ADD EMPLOYEE TO ARRAY
+    employees.push(employee);
+    // SHOW SUCCESS MESSAGE
+    console.log(`${employee} was added.`);
+    console.log('');
+}
 
-var processEntries = function () {
-    "use strict";
-    var header, html, required, msg, email, phone, country, contact, terms;
-    
-    header = "";
-    html = "";
-    required = "<span>Required fields.</span>";
-    msg = "Please review your entries and complete all required fields.";
-    email = $("email_address").value;
-    phone = $("phone").value;
-    country = $("country").value;
-    contact = "Text";
-    if ($("email").checked) {
-        contact = "Email";
-    } else if ($("none").checked) {
-        contact = "None";
-    }
-    terms = $("terms").checked;
-    
-    //Basic validation
-    if (email === "") {
-        email = required;
-        header = msg;
-    }
-    if (phone === "") {
-        phone = required;
-        header = msg;
-    }
-    if (country === "") {
-        country = required;
-        header = msg;
-    }
-    if (terms === false) {
-        terms = required;
-        header = msg;
-    }
-    
-    $("registration_header").innerHTML = header;
-    if (header === msg) {
-        html += "<tr><td>Email:</td><td>" + email + "</td></tr>";
-        html += "<tr><td>Phone:</td><td>" + phone + "</td></tr>";
-        html += "<tr><td>Country:</td><td>" + country + "</td></tr>";
-        html += "<tr><td>Contact:</td><td>" + contact + "</td></tr>";
-        html += "<tr><td>Terms:</td><td>" + terms + "</td></tr>";
-        $("registration_info").innerHTML = html;
+// DELETE EMPLOYEE
+function del(employees) {
+    // PROMPT USER FOR EMPLOYEE NUMBER TO DELETE
+    let empNum = parseInt(prompt('Enter the employee\'s number to delete'));
+    // MAKE SURE EMPLOYEE NUMBER IS VALID
+    if (!empNum < 1 || !empNum > employees.length) {
+        // SPLICE OUT EMPLOYEE TO DELETE
+        let employee = employees.splice(empNum - 1, 1);
+        // SHOW SUCCESS MESSAGE
+        console.log(`${employee} was deleted.`);
+        console.log('');
     } else {
-        $("registration_form").submit();
+        alert('Invalid employee number.');
     }
-};
+}
 
-var resetForm = function () {
-    "use strict";
-    $("registration_form").reset();
-    $("registration_header").innerHTML = "";
-    $("registration_info").innerHTML = "";
-    $("email_address").focus();
-};
+// FUNCTION TO CALL WHEN PAGE LOADS
+function init() {
+    // BEGIN BY SHOWING MAIN MENU
+    console.log('Employee Management Application');
+    console.log('-------------------------------');
+    console.log('COMMAND MENU');
+    console.log('view - Show all employees');
+    console.log('add - Add an employee');
+    console.log('del - Delete an employees');
+    console.log('exit - Exit application');
+    console.log('');
 
-window.addEventListener("load", function () {
-    "use strict";
-    $("register").addEventListener("click", processEntries);
-    $("reset_form").addEventListener("click", resetForm);
-    $("email_address").focus();
-});
+    // CREATE A TEMPORARY ARRAY OF EMPLOYEES
+    let employees = [
+        'Zak Ruvalcaba',
+        'Sally Smith',
+        'Joe Johnson',
+        'Pedro Ramirez',
+        'Stew Franklin'
+    ];
+
+    // KEEP COMMAND MENU UP UNTIL USER DECICES TO END PROGRAM
+    while(true) {
+        // ASK THE USER FOR COMMAND
+        let command = prompt('Enter command');
+        // CHECK TO SEE IF THE USER CANCELLED THE PROMPT
+        if (command !== null) {
+            // CONVERT VALUE TO LOWER CASE
+            command = command.toLowerCase();
+            // CHECK THE COMMAND ENTERED
+            if (command === 'view') {
+                // VIEW EMPLOYEES
+                view(employees);
+            } else if (command === 'add') {
+                // ADD EMPLOYEE
+                add(employees);
+            } else if (command === 'del') {
+                // DELETE EMPLOYEE
+                del(employees);
+            } else if (command === 'exit') {
+                // EXIT APPLICATION
+                break;
+            } else {
+                alert('This is not a valid value.');
+            }
+        } else {
+            alert('Please enter a value.');
+        }
+    }
+
+    console.log('Program terminated.');
+}
+init();
