@@ -1,92 +1,63 @@
-// VIEW EMPLOYEES
-function view(employees) {
-    // VARIABLE FOR EMPLOYEE NUMBERS
-    let i = 1;
-    // LOOP THROUGH EMPLOYEES ARRAY
-    employees.forEach(employee => {
-        console.log(`${String(i)}. ${employee}`);
-        i++;
-    });
-    console.log('');
+// GLOBAL VARIABLES
+let storage
+let list
+let task
+let tasks = []
+
+// GET THE DOM ELEMENTS
+const $ = (id) => {
+    return document.getElementById(id)
 }
 
-// ADD EMPLOYEE
-function add(employees) {
-    // PROMPT USER FOR EMPLOYEE TO ADD
-    let employee = prompt('Enter the employee\'s name');
-    // ADD EMPLOYEE TO ARRAY
-    employees.push(employee);
-    // SHOW SUCCESS MESSAGE
-    console.log(`${employee} was added.`);
-    console.log('');
-}
-
-// DELETE EMPLOYEE
-function del(employees) {
-    // PROMPT USER FOR EMPLOYEE NUMBER TO DELETE
-    let empNum = parseInt(prompt('Enter the employee\'s number to delete'));
-    // MAKE SURE EMPLOYEE NUMBER IS VALID
-    if (!empNum < 1 || !empNum > employees.length) {
-        // SPLICE OUT EMPLOYEE TO DELETE
-        let employee = employees.splice(empNum - 1, 1);
-        // SHOW SUCCESS MESSAGE
-        console.log(`${employee} was deleted.`);
-        console.log('');
-    } else {
-        alert('Invalid employee number.');
-    }
-}
-
-// FUNCTION TO CALL WHEN PAGE LOADS
-function init() {
-    // BEGIN BY SHOWING MAIN MENU
-    console.log('Employee Management Application');
-    console.log('-------------------------------');
-    console.log('COMMAND MENU');
-    console.log('view - Show all employees');
-    console.log('add - Add an employee');
-    console.log('del - Delete an employees');
-    console.log('exit - Exit application');
-    console.log('');
-
-    // CREATE A TEMPORARY ARRAY OF EMPLOYEES
-    let employees = [
-        'Zak Ruvalcaba',
-        'Sally Smith',
-        'Joe Johnson',
-        'Pedro Ramirez',
-        'Stew Franklin'
-    ];
-
-    // KEEP COMMAND MENU UP UNTIL USER DECICES TO END PROGRAM
-    while(true) {
-        // ASK THE USER FOR COMMAND
-        let command = prompt('Enter command');
-        // CHECK TO SEE IF THE USER CANCELLED THE PROMPT
-        if (command !== null) {
-            // CONVERT VALUE TO LOWER CASE
-            command = command.toLowerCase();
-            // CHECK THE COMMAND ENTERED
-            if (command === 'view') {
-                // VIEW EMPLOYEES
-                view(employees);
-            } else if (command === 'add') {
-                // ADD EMPLOYEE
-                add(employees);
-            } else if (command === 'del') {
-                // DELETE EMPLOYEE
-                del(employees);
-            } else if (command === 'exit') {
-                // EXIT APPLICATION
-                break;
-            } else {
-                alert('This is not a valid value.');
-            }
-        } else {
-            alert('Please enter a value.');
+// DISPLAY TASK LIST
+const displayTaskList = () => {
+    // IF THERE ARE NO TASKS IN ARRAY, CHECK STORAGE
+    if (tasks.length === 0) {
+        // GET TASKS FROM STORAGE OR EMPTY STRING IF STORAGE IS EMPTY
+        storage = localStorage.getItem('tasks') || ''
+        // IF NOT EMPTY, CONVERT TO ARRAY AND STORE IN TASKS VARIABLE
+        if (storage.length > 0) {
+            tasks = storage.split('|')
         }
     }
+    
+    // IF THERE ARE TASKS IN THE ARRAY...
+    // SORT AND CREATE TASKS STRING
+    if (tasks.length > 0) {
+        tasks.sort()
+        list = tasks.join('\n')
 
-    console.log('Program terminated.');
+        // DISPLAY TASKS STRING
+        $('task_list').value = list
+    }
 }
-init();
+
+// ADD A TASK
+const addToTaskList = () => {
+    if ($('task').value !== '') {
+        // ADD TASK TO ARRAY
+        tasks.push($('task').value)
+        // ADD TASK TO STRORAGE
+        localStorage.setItem('tasks', tasks.join('|'))
+        // CLEAR THE TEXT BOX
+        $('task').value = ''
+        // SHOW UPDATED TASKS
+        displayTaskList()
+    } else {
+        alert('Please enter a task.')
+    }
+}
+
+// CLEAR TASK LIST
+const clearTaskList = () => {
+    tasks.length = 0                    // EMPTY ARRAY
+    localStorage.removeItem('tasks')    // REMOVE TASKS FROM STORAGE
+    $('task_list').value = ''           // CLEAR OUT TASK LIST FIELD
+}
+
+// WIRE UP EVENT HANDLERS AND DISPLAY ANY TASKS IN LIST
+window.addEventListener('load', () => {
+    $('add_task').addEventListener('click', addToTaskList)
+    $('clear_tasks').addEventListener('click', clearTaskList)
+    displayTaskList()
+})
